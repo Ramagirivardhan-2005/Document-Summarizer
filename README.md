@@ -4,6 +4,14 @@ An interactive, fullstack AI-powered document intelligence studio and summarizat
 
 ---
 
+## 🌐 Live Deployments
+
+- 🚀 **Live Frontend Application**: [https://document-summarizer-gamma.vercel.app](https://document-summarizer-gamma.vercel.app/)
+- ⚡ **Backend API Base**: [https://document-summarizer-wplp.onrender.com](https://document-summarizer-wplp.onrender.com)
+- 🩺 **API Health Check**: [https://document-summarizer-wplp.onrender.com/api/health](https://document-summarizer-wplp.onrender.com/api/health)
+
+---
+
 ## 200-Word Project Approach
 
 The **Document Summary Assistant** delivers an interactive document intelligence studio. Users upload documents via a drag-and-drop interface supporting PDFs and images (JPG, JPEG, PNG). The Express backend validates file integrity, file type, and enforces a 10MB limit. 

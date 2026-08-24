@@ -36,6 +36,12 @@ export const errorHandler = (err, req, res, next) => {
     message = `Resource not found with invalid identifier: ${err.value}`;
   }
 
+  // Handle Mongoose Buffering / Connection Error
+  if (err.name === 'MongooseError' && (err.message.includes('buffering timed out') || err.message.includes('connect'))) {
+    statusCode = 503;
+    message = 'Database connection timed out. Please check MONGODB_URI and verify MongoDB Atlas IP Access List allows 0.0.0.0/0.';
+  }
+
   // Handle Mongoose ValidationError
   if (err.name === 'ValidationError') {
     statusCode = 400;

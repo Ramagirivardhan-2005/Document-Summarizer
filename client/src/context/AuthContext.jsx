@@ -41,7 +41,13 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       setLoading(false);
-      return { success: false, error: error.message };
+      const errMsg =
+        typeof error?.message === 'string'
+          ? error.message
+          : typeof error === 'string'
+          ? error
+          : 'Login failed. Please check your credentials.';
+      return { success: false, error: errMsg };
     }
   };
 
@@ -57,7 +63,13 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       setLoading(false);
-      return { success: false, error: error.message };
+      const errMsg =
+        typeof error?.message === 'string'
+          ? error.message
+          : typeof error === 'string'
+          ? error
+          : 'Registration failed. Please check your details.';
+      return { success: false, error: errMsg };
     }
   };
 

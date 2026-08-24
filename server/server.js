@@ -24,21 +24,33 @@ app.use(
 );
 
 // CORS configuration
+const envClientUrls = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((u) => u.trim().replace(/\/+$/, ''))
+  : [];
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
-  process.env.CLIENT_URL,
+  'https://document-summarizer-gamma.vercel.app',
+  ...envClientUrls,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, or server-to-server)
-      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      if (!origin) return callback(null, true);
+
+      const cleanOrigin = origin.replace(/\/+$/, '');
+      if (
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith('.vercel.app') ||
+        process.env.NODE_ENV !== 'production'
+      ) {
         callback(null, true);
       } else {
-        callback(new Error('CORS policy does not allow access from this origin.'));
+        callback(new Error(`CORS policy does not allow access from origin: ${origin}`));
       }
     },
     credentials: true,
@@ -73,6 +85,19 @@ app.get('/api/health', (req, res) => {
     database: states[dbState] || 'Unknown',
     environment: process.env.NODE_ENV || 'development',
   });
+});
+
+// Database connection check middleware for API operations
+app.use('/api', (req, res, next) => {
+  if (req.path === '/health') return next();
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message:
+        'Database is currently unreachable. Please verify MONGODB_URI and ensure MongoDB Atlas IP Access List allows 0.0.0.0/0 (Access from Anywhere).',
+    });
+  }
+  next();
 });
 
 // API Routes

@@ -60,7 +60,7 @@ export const RegisterPage = () => {
         {error && (
           <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
             <AlertCircle className="w-5 h-5 shrink-0" />
-            <span>{error}</span>
+            <span>{typeof error === 'object' ? JSON.stringify(error) : String(error)}</span>
           </div>
         )}
 

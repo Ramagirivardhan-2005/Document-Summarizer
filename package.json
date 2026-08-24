@@ -1,0 +1,10 @@
+{
+  "name": "document-summary-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "client:build": "npm --prefix client run build",
+    "server:start": "npm --prefix server start"
+  }
+}

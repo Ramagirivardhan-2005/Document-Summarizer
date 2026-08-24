@@ -21,15 +21,40 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: extract error message
+// Response interceptor: extract error message safely
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const customMessage =
-      error.response?.data?.message ||
-      error.response?.data?.error ||
-      error.message ||
-      'An unexpected error occurred. Please try again.';
+    let customMessage = 'An unexpected error occurred. Please try again.';
+
+    if (error.response?.data) {
+      const data = error.response.data;
+      if (typeof data === 'string') {
+        customMessage = data;
+      } else if (typeof data.message === 'string') {
+        customMessage = data.message;
+      } else if (typeof data.error === 'string') {
+        customMessage = data.error;
+      } else if (data.error && typeof data.error.message === 'string') {
+        customMessage = data.error.message;
+      } else if (Array.isArray(data.errors)) {
+        customMessage = data.errors
+          .map((e) => (typeof e === 'string' ? e : e?.message || JSON.stringify(e)))
+          .join(', ');
+      } else if (typeof data === 'object') {
+        try {
+          if (data.message && typeof data.message === 'object') {
+            customMessage = JSON.stringify(data.message);
+          } else {
+            customMessage = JSON.stringify(data);
+          }
+        } catch {
+          customMessage = 'Server error occurred.';
+        }
+      }
+    } else if (error.message) {
+      customMessage = typeof error.message === 'string' ? error.message : 'Network error occurred.';
+    }
 
     const normalizedError = new Error(customMessage);
     normalizedError.status = error.response?.status;
